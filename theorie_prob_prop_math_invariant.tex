@@ -1,0 +1,22 @@
+%theorie_prob_prop_math_invariant
+
+Ayant introduit notre problème, tentons de mettre en évidence des propriétés mathématiques nous permettant de trouver un invariant pour générer un algorithme. Nous allons montrer les deux propriétés suivantes : 
+\begin{itemize}
+	\item Soit une chaîne de longueur minimale de $u_0$ à $v$, dont tous les noeuds intermédiaires ont une distance à $u_0$ plus petite que $v$.
+	\item Soit un ensemble de noeuds $S$ et $V$ l'ensemble de tous les noeuds du graphe. Pour chaque $v \in (V \textbackslash S)$, soit $\ell(v)$ la longueur du chemin le plus court de $u_0$ à $v$ dont tous les noeuds intermédiaires sont dans $S$. Alors, pour le noeud $v_x \in (V \textbackslash S)$ tel que $\ell(v_x) \leq \ell(v)$ pour tout $v \in (V \textbackslash S)$, la longueur du plus court chemin entre $u_0$ et $v$ est $\ell(v_x)$.
+\end{itemize}
+
+\paragraph{}
+
+Démontrons la première propriété. Soit un noeud intermédiaire $x$. Etant donné que les arêtes sont toutes de poids positifs ou nuls, la longueur du chemin $x-v$ sera positive ou nulle. Donc, la longueur du chemin $u-x-v$ sera plus grande ou égale à la longueur du chemin $u-x$. Comme ceci est valable pour tout noeud intermédiaire $x$, cela démontre la propriété.
+
+\paragraph{}
+
+Démontrons à présent la deuxième propriété. Supposons par l'absurde qu'il existe une longueur $\ell(v_{x_2})$ telle que $\ell(v_{x_2})<\ell(v_x)$. Par hypothèse, on sait que $\ell(v_x)$ est la longueur du chemin le plus court de $u_0$ à $v_x$ dont tous les noeuds intermédiaires sont dans $S$. Donc, $\ell(v_{x_2})$ est la longueur d'un chemin utilisant au moins un noeud hors de $S$. Notons par $v_y$ le premier noeud hors de $S$ rencontré dans le chemin partant de $u_0$ vers $v_x$, de longueur $\ell(v_{x_2})$. Ce chemin sera du type $u_0 - v_y - v_x$. La plus petite longueur possible pour le chemin $u_0 - v_y$ est $\ell(v_y)$, par définition étant donné que ce chemin n'utilise que des noeuds de $S$. Comme les arêtes sont de poids positifs ou nuls, nous savons que le plus court chemin de $v_y$ à $v_x$ a une longueur positive ou nulle : $\ell(v_y - v_x) \geq 0$. Or, par définition de $\ell(v_x)$, nous savons que $\ell(v_x) \leq \ell(v_y)$. Donc, comme $\ell(v_y - v_x) \geq 0$, $\ell(v_x) \leq (\ell(v_y)+\ell(v_y - v_x))=\ell(v_{x_2})$. Ceci contredit notre hypothèse, ce qui prouve la propriété.
+
+\paragraph{}
+
+Sur base de ces deux invariants, nous pouvons construire l'algorithme de Dijkstra. Celui-ci va construire l'ensemble $S$ de la deuxième proposition, en y ajoutant progressivement les noeuds pour lesquels nous avons trouvé la longueur des plus courts chemins depuis $u_0$. 
+
+
+

@@ -1,0 +1,104 @@
+%En-tête classique pour un rapport en EPL
+%========================================
+%\usepackage{fullpage} %si on veut en page complète
+
+\usepackage[french]{babel} %En francais
+\usepackage[utf8]{inputenc} %Caracteres accentués
+\usepackage[T1]{fontenc} 	%Police accentuée
+\usepackage{lmodern}			%Police vectorielle (haute qualité)
+\usepackage{vmargin} %Marges normales en A4
+\usepackage{amsmath} %Insertion d'equations
+%\usepackage{theorem}
+%\usepackage{ntheorem} 
+ 
+
+\usepackage{amsfonts}
+\usepackage{amssymb}
+%\usepackage{algorithm}
+\usepackage{arydshln}  % pour pointillés dans matrice
+\usepackage{algpseudocode}
+%\usepackage{amsfont} % pour $\mathbb{R}$
+\usepackage{amssymb}
+
+\usepackage{graphicx} %Images dans le PDF
+\usepackage{epstopdf} %importer des eps (à laisser sous package graphicx !
+\graphicspath{{Figures/}}
+\usepackage{float} 		%Flottants : Figures,Tables
+\usepackage{color}		%Utilisation de couleurs
+\definecolor{gris}{gray}{0.5}
+\usepackage{eurosym}
+\usepackage[hyphens]{url}
+\usepackage{hyperref}
+% \usepackage{breakurl}
+\usepackage{wrapfig}
+\usepackage{multirow} 
+\usepackage{rotating}
+\usepackage[small,bf]{caption}
+\usepackage{textcomp}
+\usepackage{subfigure}
+\usepackage{amsthm}
+\usepackage{pgf}
+\usepackage{mathtools}
+\usepackage[final]{pdfpages} 
+
+\newtheorem*{theorem}{Théorème} % pour numéroter : \newtheorem{theorem}{Théorème}[section]
+\newtheorem{mydef}{Définition}
+
+%========================================
+\usepackage{listings}	%Inclusion de code-source
+\lstset{							%Paramètres généraux pour les inclusions de code
+	flexiblecolumns=true,
+	numbers=left,
+	numberstyle=\ttfamily\tiny,
+	keywordstyle=\textcolor{blue},
+	stringstyle=\textcolor{red},
+	commentstyle=\textcolor{green},
+	breaklines=true,
+	extendedchars=true,
+	basicstyle=\ttfamily\scriptsize,
+	showstringspaces=false,
+	captionpos=b
+	}
+\renewcommand{\lstlistingname}{\textsc{Code}}	%Remplacer 'Listing' par 'Code' dans les légendes
+\usepackage[french,boxed,linesnumbered]{algorithm2e}	%Package algorithme avec options
+
+
+\hypersetup{
+colorlinks,%
+citecolor=black,%
+filecolor=black,%
+linkcolor=black,%
+urlcolor=black
+} 
+\usepackage[framed,numbered,autolinebreaks,useliterate]{mcode}
+%% Define a new 'leo' style for the package that will use a smaller font.
+\makeatletter
+\def\url@leostyle{%
+  \@ifundefined{selectfont}{\def\UrlFont{\sf}}{\def\UrlFont{\small\ttfamily}}}
+\makeatother
+%% Now actually use the newly defined style.
+\urlstyle{leo}
+
+
+\makeatletter
+\renewenvironment{thebibliography}[1]{%
+%     \section*{\refname}%
+%      \@mkboth{\MakeUppercase\refname}{\MakeUppercase\refname}%
+      \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy
+      \clubpenalty4000
+      \@clubpenalty \clubpenalty
+      \widowpenalty4000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+\makeatother
+

@@ -1,0 +1,8 @@
+% poser_prob
+Ayant énoncer notre problème, commençons dès à présent à l'étudier. Quelles sont les ``conditions de fonctionnement de l'algorithme'' ? A première vue, les conditions suivantes semblent évidentes :
+\begin{itemize}
+	\item Les noeuds fournis en argument du programme doivent appartenir au même graphe, la distance entre deux noeuds de deux graphes n'étant pas définie.
+	\item Les poids sur les arêtes doivent tous être positifs ou nul. En effet, l'algorithme de Dijkstra est efficace car, d'itération en itération, il ne doit pas reconsidérer les noeuds pour lesquels il a déjà trouvé la longueur du plus cours chemin par rapport au noeuds initial fourni en argument. Or, si des arêtes de poids négatifs se trouvent dans le graphe, il se peut que la plus petite longueur nécessite d'emprunter des arêtes de plus grand poids pour n'utiliser qu'ensuite une arête négative. Cette mise à jour n'est pas effectuée par l'algorithme, car celle-ci prendrait un temps exponentiel, le nombre de chemin d'un noeud à un autre dans un graphe évoluant exponentiellement avec le nombre de noeuds et d'arêtes.
+\end{itemize}
+
+Ayant défini ces quelques conditions, le problème peut maintenant être étudié de façon plus approfondie. Nous pouvons d'or et déjà affirmer que nous aurons besoin d'un outil, d'une fonction, pour déterminer le poids minimal d'une arête entre deux noeuds adjacents. De plus, nous devrons pouvoir considérer les noeuds comme des entités à partir desquelles nous pourrons étudier les relations d'adjacence. Nous développerons davantage ces dernières nécessités en section \ref{sec:th_prob}. Notons enfin que l'algorithme de Dijkstra est aussi d'application sur les graphes dirigés.

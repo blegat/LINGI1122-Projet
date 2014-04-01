@@ -1,0 +1,101 @@
+% theorie_prob_algo
+
+Ayant remarqué quelques conditions nécessaires au bon fonctionnement de l'algorithme et les invariants utiles à sa construction, nous pouvons  présent décrire l'algorithme.
+Pour cela, nous énonçons en premier lieu l'algorithme\footnote{On écrit ici la version de l'algorithme où on renvoit toutes les longueurs des plus courts chemins d'un noeud aux autres du graphe.
+Pour ne trouver que la longueur du plus court chemin entre deux noeuds, il suffit d'arrêter l'itération lorsque $u'$ vaut le deuxième noeud de la paire formée avec $u_0$} \cite{cours_graphe}.
+On introduit les notations suivantes : $v$ désigne un noeud du graphe $G$, $\ell(v)$ désigne la longueur courante, dans les itérations de l'algorithme, entre $v$ et le noeud $u_0$ fourni en argument et $w(u'v)$ désigne la longueur de l'arête de plus faible longueur joingant $u'$ et $w$, ce qui faut $\infty$ si $u'$ et $w$ ne sont pas adjacents  :
+
+\begin{algorithm}[H]
+ \KwData{Graphe $G$, $u_0$ un noeud de $G$}
+ \KwResult{Longueurs des plus courts chemins entre un noeud $u_0$ et les autres noeuds du graphe}
+ initialization : $\ell(u_0)=0$, $\ell(v)=\infty$ pour $v \neq u_0$, $S:=u_0$, $u'=u_0$ \;
+ \While{$G\textbackslash S \neq \emptyset$}{
+  pour chaque $v \notin S$, $\ell(v)=$min($\ell(v)$,$\ell(u')+w(u'v)$) \% \bsc{mise à jour de $\ell$} \;
+	trouver $\vmin \notin S$ tel que $\ell(\vmin) \leq \ell(v)$ pour tout $v \notin S$\;
+	$u':=\vmin$\;
+	$S=S \cup \{ u' \}$\;
+ }
+ \caption{Algorithme de Dijkstra}
+ \label{algo:dijkstra}
+\end{algorithm}
+
+\paragraph{}
+
+Cet algorithme fonctionne donc par des mises à jour successives des longueurs des plus courts chemins liant un noeud $u_0$ aux autres noeuds du graphe.
+Dans l'ensemble $S$ se trouvent les noeuds pour lesquels nous avons trouvé la longueur du plus court chemin le liant à $u_0$.
+Nous remarquons donc que dans la phase d'initialisation, la longueur du plus court chemin entre $u_0$ et lui-même est mise à $0$ et que celles de $u_0$ aux autres noeuds du graphe est mise à $\infty$\footnote{Même s'il ne s'agit que d'un détail d'implémentation, notons que nous pourrions stocker les distances entre $u_0$ et les autres noeuds du graphe dans un tableau.}.
+L'ensemble $S$ contient donc $u_0$, étant donné que comme il n'y a pas d'arête de poids négatif, la longueur du plus court chemin entre deux noeuds ne peut être inférieure à $0$.
+Nous posons alors $u'=u_0$, avec $u'$ le noeud ajouté dans l'ensemble $S$ à l'itération précédente de l'algorithme.
+
+\paragraph{}
+
+Nous entrons alors dans une phase récursive de l'algorithme, qui se poursuit tant que tout les noeuds n'ont pas été ajoutés dans l'ensemble $S$, ce qui signifie que l'algorithme se poursuit tant que toutes les distances des plus courts chemins entre $u_0$ et les autres noeuds du graphe n'ont pas été trouvées.
+Notons que dans le cas où nous souhaitons utiliser l'algorithme pour trouver la longueur du plus court chemin entre deux noeuds $u_0$ et $u_1$ et non pas entre un noeud $u_0$ et les autres noeuds du graphe, il suffit d'arrêter la récursion quand $u'=u_1$.
+
+\paragraph{}
+
+Tant que la condition d'itération est satisfaite, nous entrons donc dans la boucle.
+La première étape est alors de mettre à jour les distances entre les noeuds hors de $S$ et $u_0$.
+En effet, à la phase d'initialisation, nous avons posé les distances entre $u_0$ et tous les autres noeuds du graphe à $\infty$, mais la distance entre $u_0$ et ses voisins est plus petite que $\infty$.
+Nous mettons donc à jour les longueurs par rapport à $u_0$ pour les noeuds hors de $S$ de la façon suivante : la longueur d'un chemin\footnote{Et non pas du plus court chemin, car le noeud $v$ n'est pas encore dans l'ensemble $S$, donc $\ell(v)$ n'est qu'une approximation de $d(u_0,v)$, cette dernière notation désignant la longueur du plus court chemin entre $u_0$ et $v$.} entre $u_0$ et $v$ est éale au minimum entre la longueur d'un chemin de $u_0$ à $v$, enregistrée à l'itération précédente, et la longueur du plus court chemin de $u_0$ à $u'$\footnote{Nous désignons cette fois-ci le plus court chemin car $u' \in S$.} additionnée par la longueur de l'arête de plus faible poids liant $u'$ à $v$.
+Ainsi, au premier passage dans la boucle, les longueurs $\ell(v)$ seront mises à jour pour les noeuds voisins de $u_0$.
+Remarquons d'or et déjà que l'algorithme ne remet à jour les distances que pour les noeuds pour lesquels il n'a pas encore trouvé la longueur du plus court chemin les liant à $u_0$, et non pas pour tous les noeuds du graphe.
+Donc, au fur et à mesure des itérations, quand l'ensemble $S$ grandit, cette étape prend de moins en moins de temps, ce qui détermine en grande partie l'efficacité de l'algorithme.
+En outre, cette étape est correcte : il n'est pas utile de reconsidérer les longueurs pour tous les noeuds du graphe étant donné qu'il n'y a pas d'arête de poids négatifs.
+Nous expliciterons davantage cette propriété par la suite.
+
+\paragraph{}
+
+Une fois les distances mises à jour, nous trouvons alors le noeud hors de $S$ dont la longueur du chemin le liant à $u_0$ est plus petite ue pour tous les autres noeuds de $S$.
+Nous avons alors trouvé la longueur du plus court chemin le liant à $u_0$, le rajoutons dans l'ensemble $S$ et le désignons par $u'$ dans la prochaine itération de l'algorithme.
+Pourquoi est-il correct de rajouter ce noeud dans l'ensemble $S$ ? Nous allons expliquer ce résultat par une preuve pas récurrence.
+Nous allons prouver par récurrence sur les itérations de l'algorithme que, une fois les distances mises à jour, $\ell(\vmin)$ désigne bien la longueur du plus court chemin liant $u_0$ à $\vmin$ et que pour $\ell(v)$, pour tout noeud $v$ du graphe, désigne la longueur du plus court chemin entre $u_0$ et $v$ en utilisant seulement des noeuds de $S$.
+
+\paragraph{}
+
+Considérons d'abord la première itération de l'algorithme (cas de base) : $\vmin$ désignera le voisin de $u_0$ relié à celui-ci par l'arête sortant de $u_0$ de plus faible poids, étant donné que l'étape de mise à jour des longueurs n'a d'effet que pour les noeuds voisins de $u_0$, la distance entre deux noeuds non-adjacents valant $\infty$.
+Notons le poids de cette arête par $x$ positif ou nul et cette arête $A$.
+La longueur du plus court chemin entre $u_0$ et $\vmin$ sera donc au plus $x$.
+Comme toutes les autres arêtes liant $u_0$ à ses voisins sont de poids au moins équivalent et qu'il n'y a pas d'arêtes de poids négatifs, alors un autre chemin vers $\vmin$ ne peut qu'avoir une longueur supérieure ou égale à $x$.
+En effet, supposons d'abord que toutes les autres arêtes reliées à $u_0$ soit de poids strictement supérieure à $x$.
+Alors, en empruntant un chemin reliant $u_0$ à $\vmin$ en partant avec une autre arête que $A$, nous empruntons un poids strictement supérieure à $x$ et donc pas le plus court chemin car la longueur du plus court chemin reliant $u_0$  $\vmin$ est au plus de $x$\footnote{S'il y avait eu des poids négatifs dans le graphe, alors nous aurions pu ``rattraper'' ce poids supérieur à $x$ en empruntant une arête de poids négative par la suite.
+Mais ceci est impossible étant donné que nous excluons les arêtes de poids négatif.}.
+Supposons maintenant qu'il existe d'autres arêtes de poids $x$ entre $u_0$ et ses voisins.
+Chacune de celles-ci conduit à un autre noeud $v_i$, relié à $\vmin$\footnote{Ces noeuds $v_i$ sont toujours reliés à $\vmin$ dans un graphe non-dirigé : il suffit d'emprunter l'arête dans l'autre sens pour revenir à $u_0$ et puis d'emprunter l'arête $A$.
+Dans le cas d'un graphe dirigé, il peut ne pas exister de chemin entre $v_i$ et $\vmin$.}.
+Etant donné que toutes les arêtes sont de poids positif ou nul, la longueur du plus court chemin entre $v_i$ et $\vmin$ est positive ou nulle.
+Désignons la par $\ell_i$.
+Ayant déjà emprunté une arête de poids $x$, si la $\ell_i > 0$, alors le plus court chemin liant $u_0$ à $\vmin$ sans emprunter l'arête $A$ en premier lieu est de poids strictement supérieur à $x$, ce qui n'est pas le plus court chemin.
+Si $\ell_i = 0$, alors la longueur du plus court chemin liant $u_0$ à $\vmin$ sans emprunter l'arête $A$ en premier lieu est aussi de $x$.
+Comme ceci est valable pour tous les $i$ désignant un voisin $v_i$ de $u_0$ relié à celui-ci par une arête de poids $x$, nous savons alors qu'il n'existe pas de chemin de chemin entre $u_0$ et $\vmin$ de poids inférieure à $x$.
+Nous avons donc montré que $x$ est la longueur du plus court chemin reliant $\vmin$ à $u_0$ et donc ce chemin n'est pas unique : il suffit de considérer l'exemple où $u_0$ est relié à $\vmin$ par une arête de poids $x$ positif ou nul, à un autre noeud $v_2$ par une arête de poids $x$ et où $\vmin$ et $v_2$ sont réliés par une arête de poids nul.
+Les plus chemins de $u_0$ à $\vmin$ sont donc : $u_0 - \vmin$ et $u_0 - v_2 - \vmin$, ceux-ci étant de poids égaux.
+
+\paragraph{}
+
+Enfin, montrons que $\ell(v)$, pour tout $v \in G$, désigne bien la longueur du plus court chemin entre $u_0$ et $v$ en utilisant seulement des noeuds de $S$, sachant qu'à la première itération, $S$ ne contient que $u_0$. La distance $\ell(u_0)$ n'est pas mise à jour et, valant 0, est bien égale à la longueur du plus court chemin de $u_0$ à $u_0$. Aussi, la longueur du plus court chemin, en utilisant simplement des noeuds de $S$, entre $u_0$ et un noeud $v$ adjacent à $u_0$ est bien égale à $w(u_0 v)$, le poids de l'arête de plus faible poids entre les deux noeuds. De plus, par l'étape de mise à jour de $\ell$ et le fait que $\ell(v)$ est initialisé à $\infty$ pour $v \neq u_0$, $\ell(v)$vaudra bien $w(u_0 v)$ après la mise à jour. Pour $v$ non-adjacent à $u_0$, la distance entre lui et $u_0$ en utilisant seulement des noeuds de $S$ vaut bien $\infty$. $\ell(v)$ pour $v$ non-adjacent n'est donc pas changé. 
+
+\paragraph{}
+
+Ayant démontré le cas de base, démontrons le cas récursif : le noeud $\vmin$ ajouté dans $S_n$\footnote{Nous désignons l'ensemble $S_n$ comme l'ensemble $S$ à la fin de l'itération $n$, donc après avoir exécuté $S:=S \cup \{u'\}$.} à l'itération $n+1$ est relié à $u_0$ par une longueur minimale $\ell(\vmin)$ et, à la fin de l'itération $n+1$, $\ell(v)$, pour tout $v \in G$, désigne la longueur du plus court chemin entre $u_0$ et $v$ en utilisant seulement des noeuds de $S_n$. Nous disposons pour cela de l'hypothèse de récurrence : $\ell(u')$ désigne la longueur du plus court chemin entre $u_0$ et $u'$ et $\ell(v)$, pour tout $v \in G$, défini à la fin de l'étape $n$,  désigne la longueur du plus court chemin entre $u_0$ et $v$ en utilisant seulement des noeuds de $S_n \textbackslash \{u'\}$.  
+
+\paragraph{}
+
+Montrons d'abord que $\ell(\vmin)$ désigne la longueur du plus court chemin entre $u_0$ et $\vmin$. Supposons par l'absurde qu'il existe une distance $\ell_x$ telle que $\ell_x < \ell(\vmin)$. Par l'hypothèse de récurrence, $\ell(\vmin)$ est la longueur du plus court chemin entre $u_0$ et $\vmin$ en utilisant simplement des noeuds de $S_n \textbackslash \{u'\}$. Donc, $\ell_x$ utilise des noeuds hors de $S$ pour aller jusque $\vmin$. Comme les arêtes sont de poids positifs ou nuls, si $\ell_x < \ell(\vmin)$, il existe un noeud $v_y \notin S$ tels que, pour au moins un $v_i$, $\ell(v_y) < \ell(v_i)$, en désignant par $v_i$ un noeud de $S$ emprunté par le chemin de $u_0$ à $\vmin$, de longueur $\ell(\vmin)$, n'empruntant que des noeuds de $S$. Or, ceci est impossible car si cela avait été le cas, nous aurions ajouté $v_y$ dans $S$ à une étape précédente de l'algorithme, par la ligne \textit{trouver $\vmin \notin S$ tel que $\ell(\vmin) \leq \ell(v)$ pour tout $v \notin S$}. Dès lors, $\ell(\vmin)$ désigne la longueur du plus court chemin entre $u_0$ et $\vmin$.
+
+\paragraph{}
+
+Pour ce qui est de la deuxième partie de la propriété, notons par $\ell_{n}(v)$ la longueur du plus court chemin entre $v$ et $u_0$ en utilisant seulement des noeuds de $S_n \textbackslash \{u'\}$, avec $u'$ le noeud ajouté à l'itération $n$ et par $\ell_{n+1}(v)$ la longueur du plus court chemin entre $v$ et $u_0$ en utilisant seulement des noeuds de $S_n$. Le seul noeud susceptible faire diminuer $\ell_{n}(v)$ est celui que nous ajoutons dans $S$, à savoir $u'$, par définition de $\ell_{n}(v)$. Or, la ligne \bsc{mise à jour e $\ell$} exploite justement ce nouveau noeud récemment ajouté pour mettre à jour $\ell_{n}(v)$ en $\ell_{n+1}(v)$, vu $l(u')$ est la longueur du plus court chemin entre $u_0$ et $u'$ et n'utilise de plus que des noeuds de $S_n$, par l'hypothèse de récurrence. Ceci démontre donc la propriété.
+
+\paragraph{}
+
+Au cours de la démonstration de l'algorithme, nous avons donc pu identifié les deux invariants suivants : 
+\begin{itemize}
+	\item pour $v \in S$, $\ell(v)=d(u_0,v)$, $d(u_0,v)$ désignant la longueur du plus court chemin entre $u_0$ et $v$. De plus, le plus court chemin de $u_0$ à $v$ reste dans $S$.
+	\item pour $v \notin S$, $\ell(v) \geq d(u_0,v)$ et $\ell(v)$ est la longueur du plus court chemin de $u_0$ vers $v$ dont tous les noeuds internes sont dans $S$.
+\end{itemize}
+
+\paragraph{}
+
+Signalons une fois encore que si le graphe avait comporté des arêtes négatives, les invariants n'auraient pas pu être satisfait. En effet, ce n'est pas parce qu'un noeud $v$ est dans $S$ que $\ell(v)$ désigne la longueur du plus court chemin de $u_0$ à $v$. En effet, considérons le graphe simple complet à trois noeuds $x$, $y$ et $z$. Soit l'arête $x-y$ de poids $3$, l'arête $x-z$ de poids $4$ et l'arête $y-z$ de poids $-2$. Soit $u_0=x$. A sa première itération, comme $3 < 4$, l'algorithme va ajouter $y$ dans $S$ et considérer $\ell(y)=3$. Ensuite, la mise à jour de $\ell(z)$, qui valait $4$ à la précédente itération, donne : $\ell(z)=min(\ell(z),\ell(y)+w(y,z))=min(4,3+(-2))=1$. L'algorithme s'arrêtera donc en posant $\ell(z)=1$, sans remettre à jour $\ell(y)$ à $2$. Sa solution est donc fausse. Pour arriver à un bon résultat, il devrait, à chaque étape, reconsidérer tous les chemins possibles dans S menant à chaque noeud, ce qui a une complexité exponentielle.
+ 

@@ -1,0 +1,99 @@
+
+\makeatletter
+\def\clap#1{\hbox to 0pt{\hss #1\hss}}%
+\def\ligne#1{%
+\hbox to \hsize{%
+\vbox{\centering #1}}}%
+\def\haut#1#2#3{%
+\hbox to \hsize{%
+\rlap{\vtop{\raggedright #1}}%
+\hss
+\clap{\vtop{\centering #2}}%
+\hss
+\llap{\vtop{\raggedleft #3}}}}%
+\def\bas#1#2#3{%
+\hbox to \hsize{%
+\rlap{\vbox{\raggedright #1}}%
+\hss
+\clap{\vbox{\centering #2}}%
+\hss
+\llap{\vbox{\raggedleft #3}}}}%
+\def\maketitle{%
+\thispagestyle{empty}\vbox to \vsize{%
+\ligne{\@blurbb}
+\vspace{1cm}
+\haut{}{\large \@blurb}{}
+\vspace{1cm}
+\haut{}{\large \bf \@codeCours : \@nomCours}{}
+\vspace{1cm}
+\haut{}{\bf \@nomDoc}{}
+\vfill
+\vspace{1cm}
+\begin{flushleft}
+\usefont{OT1}{ptm}{m}{n}
+\huge \@title
+\end{flushleft}
+\par
+\hrule height 2pt %la grosse ligne
+\par
+\begin{flushright}
+\usefont{OT1}{phv}{m}{n}
+\@author
+\par
+\end{flushright}
+\vspace{1cm}
+\vfill
+\vfill
+\bas{}{\large \@prof}{}
+\vspace{1cm}
+\bas{}{\large \@date}{}
+}%
+\cleardoublepage
+}
+\def\date#1{\def\@date{#1}}
+\def\author#1{\def\@author{#1}}
+\def\title#1{\def\@title{#1}}
+\def\location#1{\def\@location{#1}}
+\def\blurb#1{\def\@blurb{#1}}
+\def\blurbb#1{\def\@blurbb{#1}}
+\def\nomCours#1{\def\@nomCours{#1}}
+\def\codeCours#1{\def\@codeCours{#1}}
+\def\nomDoc#1{\def\@nomDoc{#1}}
+\def\prof#1{\def\@prof{#1}}
+\date{\today}
+\author{}
+\title{}
+\blurb{}
+\makeatother
+\title{L'algorithme de Dijkstra}
+\author{Group 8 :\\
+Cyril \bsc{de Bodt}\\
+Alexandre \bsc{Laterre}\\
+Benoit \bsc{Legat}\\
+Alexis \bsc{Pierret}\\
+F\'elicien \bsc{Schiltz}}
+\date{Février 2014}
+\blurb{%
+Université Catholique de Louvain\\
+Ecole Polytechnique de Louvain\\
+}% 
+
+\codeCours{
+LINGI1122}
+\nomCours{
+Méthodes de conception de programmes
+}%
+\nomDoc{%
+}%
+\blurbb{%
+\begin{tabular}{ccc}
+\includegraphics[height=3cm]{Images/logoucl}
+&
+\hspace{5cm}
+&
+\includegraphics[height=3cm]{Images/logoepl}
+\end{tabular} 
+}
+\prof{%
+Professeur : José \bsc{Vander Meulen} 
+}%

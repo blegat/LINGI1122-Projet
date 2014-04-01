@@ -1,0 +1,71 @@
+%convention_representation : représentation informatique des données et résultats du programme
+\paragraph{Conventions de représentation en entrée}
+Posons $n$ le nombre de noeuds et $m$ le nombre d'arêtes et $u_i$ pour $i = 1, \ldots, n$ le $i$\ieme{} noeud.
+
+Nous travaillons dans le cas général où le graphe n'est pas spécialement simple,
+on ne peut donc représenter le graphe par une matrice d'adjacence, surtout que ça ne serait pas efficace pour un graphe sparse car la complexité spaciale d'une telle matrice est $\bigoh(n^2)$.
+
+L'unique opération qu'on a besoin de faire sur le graphe est de demander la liste des arêtes partant d'un noeud.
+Un graphe sous la forme d'une Adjacency List parait donc approprié car la complexité de cette opération pour un noeud $v$ serait alors $\bigoh(\deg(v))$ qui est imbatable car c'est aussi la taille de la sortie.
+
+Si on a en entrée un Edge List, on peut passer en Adjacency List en $\bigoh(m)$ ce qui est acceptable car la complexité de l'algorithme est $\bigoh(m\log(n))$ mais pas vraimen désirable.
+
+Demandons donc une Adjacency List \lstinline|Edge graph[][]|
+où \lstinline|graph[i]| donne les arêtes partant du $i$\ieme{} noeud.
+Représentons d'ailleurs les noeuds de façon neutre avec $u_i = i-1$.
+On aura besoin pour chaque arête de connaitre le poids $w$ et le noeud d'arrivée $v$.
+Seulement, pour rester dans la représentation générale des graphes,
+définissons une arête comme suit
+\begin{lstlisting}
+class Edge {
+  int u; % source
+  int v; % destination
+  int w; % weight
+}
+\end{lstlisting}
+Le poids est ici également représenté par un \lstinline|int|.
+On va considérer que la somme des poids des arêtes du graphe ne dépasse pas $2^{31}-1$.
+On considère aussi qu'il y a moins de $2^{31}-1$ noeuds même si pour un graphe fort sparse, l'algorithme peut terminer assez rapidement même avec un graphe de $2^{32}$ noeuds.
+
+Cette discussion peut être évitée en considérant ici \lstinline|int| comme une indication que ce sont des données qui peuvent être représentée de façon entière sans le lier spécifiquement au \lstinline|int| de Java.
+
+Le noeud de départ et d'arrivée sont simplement spécifier en entier
+également avec \lstinline|int u_0| pour le noeud de départ
+et \lstinline|int u_1| pour le noeud d'arrivée.
+
+\paragraph{Conventions de représentation en sortie}
+Il y aura en sortie un unique entier représentant la longueure minimale que prend une chaîne de $u_0$ à $u_1$.
+
+\paragraph{Conventions de représentation durant le programme}
+Du au fait que $u_i = i-1$, $\ell(u_i)$ peut être trivialement représentée par un tableau d'entier \lstinline|int[] l| de taille $n$.
+Une question se pose cependant sur la représentation de l'infini.
+Comme toutes les longueurs sont positives, on peut utiliser une valeur sentinelle comme $-1$ sans poser d'ambiguïter.
+On aurait donc
+$$\lstinline|l[i]| =
+\begin{cases}
+  -1 & \text{si } \ell(u_{i+1}) = \infty\\
+  \ell(u_{i+1}) & \text{sinon}.
+\end{cases}$$
+
+Vient maintenant la question de la structure de donnée nous permettant d'obtenir $\vmin$ dans l'algorithme~\ref{algo:dijkstra}.
+Notre Adjacency List nous permet de faire la ligne 3 en $\bigoh(\degout(u') f(n))$ où $f(n)$ est la complexité de mettre à jour $\ell(v)$.
+La ligne 4 a une complexité de $\bigoh(g(n))$ où $g(n)$ est la complexité de trouver $\vmin$.
+La complexité de l'algorithme est donc $\bigoh(mf(n) + ng(n))$.
+Comparons à présent plusieurs structures de donnée possibles nous permettant de rechercher $\vmin$
+\begin{description}
+  \item[Aucune] Avec simplement \lstinline|l|, on a $f(n) = \bigoh(1)$ et $g(n) = \bigoh(n)$ et donc $\bigoh(m + n^2)$ ce qui pour un graphe simple vaut $\bigoh(n^2)$ car $m \leq \frac{n(n-1)}{2}$ pour un graph simple. C'est une bonne complexité pour un graphe dense mais comme on va le voir on sait faire bien mieux pour un graphe un peu sparse.
+  \item[Un heap avec location unaware entries] Comme on ne sait pas modifier la clef d'une entrée, lorsqu'on veut mettre à jour $\ell(v)$, il faut réajouter $v$ avec le nouveau $\ell(v)$ et se rappeler d'ignorer
+    l'ancien quand il sortira de la priority queue. Ceci peut être fait en calculant $S$ à l'aide d'un Bitset.
+    Dans le pire cas où on met à jour à chaque coup, le nombre d'entrée dans le heap peut atteindre $m$, ce qui donne
+    $f(n, m) = \bigoh(\log(m))$ et $g(n, m) = \bigoh(\log(m))$ et pour un graphe simple,
+    $f(n, m) = \bigoh(2\log(n))$ et $g(n, m) = \bigoh(2\log(n))$ ce qui fait aussi du $\bigoh(\log(n))$ mais avec une moins bonne constante.
+    Ça rajoute aussi du $m \log(m)$ pour toutes les $m$ boucles inutiles dans le pire cas où on tirera une entrée à ignorer.
+  \item[Un heap avec location aware entries] On peut alors modifier directement l'entrée correspondante à $v$ lorsqu'on met
+    à jour $\ell(v)$ ce qui va simplement replacer $(v, \ell(v))$ dans l'arbre et qui est d'ailleurs bien plus léger qu'un ajout.
+    On a alors simplement $f(n) = \log(n)$ et $g(n) = \log(n)$ ce qui fait une complexité $\bigoh(m\log(n))$ mais avec une constante bien
+    inférieure à celle du précédent.
+\end{description}
+Le heap formant un arbre binaire complet, il peut être stocké de façon très efficace dans un tableau \lstinline|int[] heap|
+où $\lstinline|l[heap[i]]| \leq \lstinline|l[heap[2*(i+1)-1]]|$ et $\lstinline|l[heap[i]]| \leq \lstinline|l[heap[2*(i+1)-2]]|$.
+Pour la location awareness, il nous suffit d'un autre tableau \lstinline|int[] back|
+donnant à chaque noeud sa place dans le tableau donc $\lstinline|back[v]| = \lstinline|i| \Leftrightarrow \lstinline|heap[i]| = \lstinline|v|$.
